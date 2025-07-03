@@ -40,8 +40,8 @@ export default function ColorInput({ onColorSubmit, isLoading }: ColorInputProps
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto">
-      <div className="bg-white rounded-2xl shadow-lg border border-slate-200 p-8">
+    <div className="w-full max-w-2xl mx-auto px-0 md:px-4">
+      <div className="bg-white rounded-none md:rounded-2xl shadow-lg border-0 md:border border-slate-200 p-6 md:p-8">
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center mb-6">
             <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">

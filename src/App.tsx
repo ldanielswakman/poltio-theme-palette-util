@@ -57,7 +57,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-100 via-slate-50 to-slate-100">
-      <div className="container mx-auto px-4 py-12">
+      <div className="container mx-auto px-4 md:px-4 py-12">
         {colorShades.length === 0 ? (
           <div className="flex items-center justify-center min-h-[70vh]">
             <ColorInput 

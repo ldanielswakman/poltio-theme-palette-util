@@ -176,6 +176,7 @@ export function generateColorRamp(baseHex: string): ColorShade[] {
   
   percentages.forEach(percentage => {
     let adjustedL: number;
+    let adjustedS: number = hsl.s;
     
     if (percentage === 100) {
       // Use the base color as-is for 100%
@@ -184,13 +185,23 @@ export function generateColorRamp(baseHex: string): ColorShade[] {
       // Darker shades: reduce lightness
       const factor = (percentage - 100) / 20; // 0 to 1 for 100% to 120%
       adjustedL = Math.max(0, hsl.l - (hsl.l * factor * 0.8));
+    } else if (percentage === 10) {
+      // Special case for 10%: very light grey (98% brightness, 2% saturation)
+      adjustedL = 98;
+      adjustedS = 2;
     } else {
-      // Lighter shades: increase lightness
+      // Lighter shades: increase lightness but maintain some saturation
       const factor = (100 - percentage) / 90; // 0 to 1 for 100% to 10%
-      adjustedL = Math.min(100, hsl.l + ((100 - hsl.l) * factor));
+      adjustedL = Math.min(95, hsl.l + ((95 - hsl.l) * factor));
+      
+      // Gradually reduce saturation for lighter shades
+      if (percentage < 50) {
+        const saturationFactor = percentage / 50; // 0 to 1 for 10% to 50%
+        adjustedS = Math.max(2, hsl.s * saturationFactor);
+      }
     }
     
-    const adjustedHex = hslToHex(hsl.h, hsl.s, adjustedL);
+    const adjustedHex = hslToHex(hsl.h, adjustedS, adjustedL);
     const adjustedHsl = hexToHsl(adjustedHex);
     
     shades.push({

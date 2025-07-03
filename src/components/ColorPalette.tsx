@@ -30,7 +30,7 @@ export default function ColorPalette({ baseColor, shades, onReset }: ColorPalett
 
   return (
     <div className="w-full max-w-6xl mx-auto">
-      <div className="bg-white rounded-2xl shadow-lg border border-slate-200 p-8">
+      <div className="bg-white rounded-none md:rounded-2xl shadow-lg border-0 md:border border-slate-200 p-6 md:p-8 pb-24 md:pb-8">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-3">
@@ -49,7 +49,7 @@ export default function ColorPalette({ baseColor, shades, onReset }: ColorPalett
             </div>
           </div>
 
-          <div className="flex items-center space-x-3">
+          <div className="hidden md:flex items-center space-x-3">
             <button
               onClick={handleExportPalette}
               className="inline-flex items-center px-4 py-2 bg-slate-100 hover:bg-slate-200 text-[#142433] rounded-lg font-medium transition-colors"
@@ -106,6 +106,27 @@ export default function ColorPalette({ baseColor, shades, onReset }: ColorPalett
           <p className="text-xs text-slate-500 mt-4">
             Click any color swatch to copy its HEX code to your clipboard.
           </p>
+        </div>
+
+        {/* Mobile Sticky Actions */}
+        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 p-4 md:hidden z-10">
+          <div className="flex space-x-3">
+            <button
+              onClick={handleExportPalette}
+              className="flex-1 inline-flex items-center justify-center px-4 py-3 bg-slate-100 hover:bg-slate-200 text-[#142433] rounded-lg font-medium transition-colors"
+            >
+              <Download className="w-4 h-4 mr-2" />
+              Export JSON
+            </button>
+            
+            <button
+              onClick={onReset}
+              className="flex-1 inline-flex items-center justify-center px-4 py-3 bg-[#009EEC] hover:bg-[#0088cc] text-white rounded-lg font-medium transition-all"
+            >
+              <RotateCcw className="w-4 h-4 mr-2" />
+              New Palette
+            </button>
+          </div>
         </div>
       </div>
     </div>
