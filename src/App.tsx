@@ -9,17 +9,34 @@ function App() {
   const [colorShades, setColorShades] = useState<ColorShade[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [showContrastModal, setShowContrastModal] = useState(false);
-  const [currentContrastRatio, setCurrentContrastRatio] = useState(0);
+  const [contrastIssues, setContrastIssues] = useState<{
+    baseContrast: number;
+    darkShadeContrast: number;
+    hasIssues: boolean;
+  }>({ baseContrast: 0, darkShadeContrast: 0, hasIssues: false });
 
   const handleColorSubmit = (color: string) => {
     setIsLoading(true);
     
     // Simulate processing delay for better UX
     setTimeout(() => {
-      const contrastRatio = getContrastRatio(color, '#FFFFFF');
-      setCurrentContrastRatio(contrastRatio);
+      // Check contrast for base color (3:1 for large text/UI)
+      const baseContrast = getContrastRatio(color, '#FFFFFF');
       
-      if (contrastRatio < 4.5) {
+      // Generate a preview of the 120% shade to check its contrast
+      const previewShades = generateColorRamp(color);
+      const darkestShade = previewShades.find(shade => shade.percentage === 120);
+      const darkShadeContrast = darkestShade ? getContrastRatio(darkestShade.hex, '#FFFFFF') : 0;
+      
+      const hasContrastIssues = baseContrast < 3 || darkShadeContrast < 4.5;
+      
+      setContrastIssues({
+        baseContrast,
+        darkShadeContrast,
+        hasIssues: hasContrastIssues
+      });
+      
+      if (hasContrastIssues) {
         setBaseColor(color);
         setShowContrastModal(true);
         setIsLoading(false);
@@ -37,7 +54,23 @@ function App() {
   };
 
   const handleAutoAdjust = () => {
-    const adjustedColor = adjustColorForContrast(baseColor, 4.5);
+    // Adjust color to meet both contrast requirements
+    let adjustedColor = baseColor;
+    
+    // First ensure the base color meets 3:1 contrast
+    if (contrastIssues.baseContrast < 3) {
+      adjustedColor = adjustColorForContrast(adjustedColor, 3);
+    }
+    
+    // Then ensure the darkest shade will meet 4.5:1 contrast
+    const testShades = generateColorRamp(adjustedColor);
+    const darkestShade = testShades.find(shade => shade.percentage === 120);
+    
+    if (darkestShade && getContrastRatio(darkestShade.hex, '#FFFFFF') < 4.5) {
+      // If the darkest shade still doesn't meet contrast, adjust further
+      adjustedColor = adjustColorForContrast(adjustedColor, 4.5);
+    }
+    
     setShowContrastModal(false);
     generatePalette(adjustedColor);
   };
@@ -57,7 +90,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-100 via-slate-50 to-slate-100">
-      <div className="container mx-auto px-4 md:px-4 py-12">
+      <div className="container mx-auto md:px-4 py-12">
         {colorShades.length === 0 ? (
           <div className="flex items-center justify-center min-h-[70vh]">
             <ColorInput 
@@ -80,7 +113,7 @@ function App() {
         onTryNewColor={handleTryNewColor}
         onAutoAdjust={handleAutoAdjust}
         currentColor={baseColor}
-        contrastRatio={currentContrastRatio}
+        contrastIssues={contrastIssues}
       />
     </div>
   );

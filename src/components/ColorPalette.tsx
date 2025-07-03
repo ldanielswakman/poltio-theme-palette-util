@@ -30,7 +30,7 @@ export default function ColorPalette({ baseColor, shades, onReset }: ColorPalett
 
   return (
     <div className="w-full max-w-6xl mx-auto">
-      <div className="bg-white rounded-none md:rounded-2xl shadow-lg border-0 md:border border-slate-200 p-6 md:p-8 pb-24 md:pb-8">
+      <div className="bg-white rounded-none md:rounded-2xl shadow-lg border-0 md:border border-slate-200 p-6 md:p-8 pb-24 md:pb-8 mx-0 md:mx-4">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-3">

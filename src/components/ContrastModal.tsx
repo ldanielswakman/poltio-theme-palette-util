@@ -7,7 +7,11 @@ interface ContrastModalProps {
   onTryNewColor: () => void;
   onAutoAdjust: () => void;
   currentColor: string;
-  contrastRatio: number;
+  contrastIssues: {
+    baseContrast: number;
+    darkShadeContrast: number;
+    hasIssues: boolean;
+  };
 }
 
 export default function ContrastModal({
@@ -16,15 +20,18 @@ export default function ContrastModal({
   onTryNewColor,
   onAutoAdjust,
   currentColor,
-  contrastRatio
+  contrastIssues
 }: ContrastModalProps) {
   if (!isOpen) return null;
 
+  const baseContrastIssue = contrastIssues.baseContrast < 3;
+  const darkShadeContrastIssue = contrastIssues.darkShadeContrast < 4.5;
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center">
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
       
-      <div className="relative bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 overflow-hidden">
+      <div className="relative bg-white rounded-t-3xl md:rounded-2xl shadow-2xl max-w-md w-full mx-0 md:mx-4 overflow-hidden">
         <div className="absolute top-4 right-4">
           <button
             onClick={onClose}
@@ -45,9 +52,30 @@ export default function ContrastModal({
 
           <div className="space-y-4 mb-8">
             <p className="text-slate-600 text-center">
-              The selected color has a contrast ratio of <strong>{contrastRatio.toFixed(2)}:1</strong> against 
-              white backgrounds, which doesn't meet the WCAG 2.1 AA standard of <strong>4.5:1</strong> for optimal readability.
+              The selected color has contrast issues that may affect accessibility:
             </p>
+
+            <div className="space-y-3">
+              {baseContrastIssue && (
+                <div className="p-3 bg-amber-50 rounded-lg border border-amber-200">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-amber-800 font-medium">Base color (UI elements)</span>
+                    <span className="text-amber-600">{contrastIssues.baseContrast.toFixed(2)}:1</span>
+                  </div>
+                  <p className="text-xs text-amber-700 mt-1">Needs 3:1 minimum for large text and UI elements</p>
+                </div>
+              )}
+
+              {darkShadeContrastIssue && (
+                <div className="p-3 bg-amber-50 rounded-lg border border-amber-200">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-amber-800 font-medium">Dark shade (small text)</span>
+                    <span className="text-amber-600">{contrastIssues.darkShadeContrast.toFixed(2)}:1</span>
+                  </div>
+                  <p className="text-xs text-amber-700 mt-1">Needs 4.5:1 minimum for small text</p>
+                </div>
+              )}
+            </div>
 
             <div className="flex items-center justify-center space-x-4 py-4">
               <div className="flex items-center space-x-2">
